@@ -8,7 +8,6 @@ services:
     envVars:
       - key: NODE_VERSION
         value: 18
-      - key: DEEPSEEK_API_KEY
-        sync: false
-      - key: SCORER_MODEL
-        value: deepseek-chat
+      # AI scoring is optional. To enable it, add DEEPSEEK_API_KEY in the
+      # Render dashboard (Environment tab). Without it the app runs in
+      # offline/manual scoring mode.

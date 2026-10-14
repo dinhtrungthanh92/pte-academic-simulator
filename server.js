@@ -38,7 +38,11 @@ function stripFences(t) {
 }
 
 app.post('/api/score', async (req, res) => {
-  if (!API_KEY) return res.status(500).json({ error: 'DEEPSEEK_API_KEY not set on the server' });
+  // AI scoring disabled: no key configured. Return a benign response so the
+  // app keeps working (it still offers manual scoring mode).
+  if (!API_KEY) {
+    return res.json({ content: '{"overall_0_90": null, "feedback": "Chấm điểm AI đã tắt."}' });
+  }
   const { system, messages, max_tokens, temperature } = req.body || {};
   const msgs = [];
   if (system) msgs.push({ role: 'system', content: system });
