@@ -8,3 +8,7 @@ services:
     envVars:
       - key: NODE_VERSION
         value: 18
+      - key: DEEPSEEK_API_KEY
+        sync: false
+      - key: SCORER_MODEL
+        value: deepseek-chat

@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#0b1120" />
+  <meta name="description" content="PTE Academic Simulator — a professional browser-based practice platform covering all 20 task types. Built by Jason Dinh." />
+  <title>PTE Academic Simulator · Jason Dinh</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Newsreader:opsz,wght@6..72,500;6..72,600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <button class="brand" id="brand-btn" type="button" title="Back to home">
+      <span class="brand-logo">
+        <svg viewBox="0 0 32 32" width="26" height="26" aria-hidden="true">
+          <defs>
+            <linearGradient id="bg1" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0" stop-color="#38bdf8"/>
+              <stop offset="1" stop-color="#6366f1"/>
+            </linearGradient>
+          </defs>
+          <rect x="1" y="1" width="30" height="30" rx="9" fill="url(#bg1)"/>
+          <path d="M9 22V10h5.2c2.5 0 4 1.4 4 3.6s-1.5 3.6-4 3.6h-2.4V22H9zm2.8-6.1h2.1c1 0 1.6-.5 1.6-1.3s-.6-1.3-1.6-1.3h-2.1v2.6z" fill="#0b1120"/>
+          <circle cx="23" cy="12" r="2.4" fill="#0b1120"/>
+          <path d="M22 16.5h2V22h-2z" fill="#0b1120"/>
+        </svg>
+      </span>
+      <span class="brand-text">
+        <strong>PTE Academic</strong>
+        <em>Simulator</em>
+      </span>
+    </button>
+    <div class="topbar-right">
+      <button id="repeated-toggle" class="btn-ghost" title="Chỉ luyện câu Repeated (đề thi thật)">🔥 Repeated: OFF</button>
+      <button id="exit-task-btn" class="btn-ghost" style="display:none;">✕ Exit task</button>
+      <span id="task-label" class="task-label"></span>
+      <span id="timer" class="timer"></span>
+      <button id="progress-btn" class="btn-ghost">📊 Progress</button>
+      <button id="about-btn" class="btn-ghost">✨ About</button>
+      <button id="settings-btn" class="btn-ghost">⚙ Settings</button>
+    </div>
+  </header>
+
+  <main id="app"></main>
+
+  <dialog id="welcome-dialog">
+    <div class="welcome">
+      <div class="welcome-badge">PTE ACADEMIC · PREP SUITE</div>
+      <h2>Chào mừng 👋</h2>
+      <p>
+        Bộ mô phỏng phòng thi <strong>PTE Academic</strong> chuyên nghiệp, đầy đủ
+        <strong>20 dạng bài</strong> với ghi âm thật, audio giọng bản xứ và
+        <strong>chấm điểm AI tự động</strong>.
+      </p>
+      <div class="welcome-features">
+        <div class="wf">🎯 <strong>20 dạng bài</strong> chuẩn Pearson</div>
+        <div class="wf">🎙️ <strong>Ghi âm</strong> + audio bản xứ</div>
+        <div class="wf">🤖 <strong>Chấm điểm AI</strong> ngay, không cần cấu hình</div>
+        <div class="wf">📚 <strong>10.000+</strong> câu hỏi luyện tập</div>
+      </div>
+      <p class="hint small">Được xây dựng bởi <strong>Jason Dinh</strong>. Chỉ cần bấm nút bên dưới để bắt đầu.</p>
+      <div class="welcome-actions">
+        <button class="primary" id="welcome-start">🚀 Bắt đầu luyện tập</button>
+      </div>
+    </div>
+  </dialog>
+
+  <dialog id="settings-dialog">
+    <form method="dialog" class="settings-form">
+      <h2>⚙ Settings</h2>
+      <label>
+        <span>Giọng đọc TTS ưa thích</span>
+        <select id="voice-select"></select>
+      </label>
+      <label>
+        <span>Tốc độ đọc</span>
+        <input type="range" id="voice-rate" min="0.7" max="1.2" step="0.05" value="1.0" />
+      </label>
+      <div class="settings-actions">
+        <button type="button" id="test-voice" class="secondary">🔊 Test voice</button>
+        <button value="save" id="save-settings" class="primary">Lưu</button>
+      </div>
+      <p class="hint">
+        Giọng đọc dùng cho các bài nghe khi không có file audio. Chấm điểm AI diễn ra tự động — không cần cấu hình.
+      </p>
+    </form>
+  </dialog>
+
+  <dialog id="manual-scoring-dialog">
+    <div class="manual-scoring">
+      <h2>Chấm điểm thủ công</h2>
+      <p class="hint">
+        Copy prompt bên dưới, dán vào <strong>claude.ai</strong> (hoặc Claude Code),
+        rồi dán kết quả JSON của Claude vào ô cuối.
+      </p>
+
+      <div class="manual-step">
+        <div class="manual-step-header">
+          <strong>1. Copy prompt này</strong>
+          <button type="button" class="secondary" id="copy-prompt-btn">📋 Copy</button>
+        </div>
+        <pre id="manual-prompt" class="manual-prompt-box"></pre>
+      </div>
+
+      <div class="manual-step">
+        <div class="manual-step-header">
+          <strong>2. Dán kết quả JSON của Claude</strong>
+          <span id="manual-paste-status" class="muted small"></span>
+        </div>
+        <textarea id="manual-response" class="manual-response-box"
+          placeholder='{ "content": 4, "pronunciation": 4, "oral_fluency": 4, "overall_0_90": 75, "feedback": "..." }'></textarea>
+      </div>
+
+      <div class="settings-actions">
+        <button type="button" class="secondary" id="manual-skip">Bỏ qua</button>
+        <button type="button" class="primary" id="manual-submit">Chấm điểm</button>
+      </div>
+    </div>
+  </dialog>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>
